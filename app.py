@@ -769,8 +769,9 @@ def delete_slide(slide_id):
     flash("Imagen eliminada del carrusel.","success")
     return redirect(url_for("admin"))
 
+init_db()
+
 if __name__ == "__main__":
-    init_db()
-    print("\\n🐾 PATA A PATA V2")
-    print("Abrí en tu navegador: http://127.0.0.1:5000\\n")
+    print("\n🐾 PATA A PATA V2")
+    print("Abrí en tu navegador: http://127.0.0.1:5000\n")
     app.run(debug=True)
