@@ -1,0 +1,121 @@
+PATA A PATA V4.0
+================
+
+REQUISITOS
+- Python 3.10 o superior recomendado.
+- Windows, macOS o Linux.
+
+INSTALACION EN WINDOWS
+1) Descomprimí el ZIP.
+2) Abrí CMD dentro de la carpeta PATA_A_PATA_V2.
+3) Ejecutá:
+   py -m pip install -r requirements.txt
+
+   Si "py" no funciona:
+   python -m pip install -r requirements.txt
+
+4) Ejecutá:
+   py app.py
+
+5) Abrí:
+   http://127.0.0.1:5000
+
+CUENTA DE ADMINISTRADOR DE PRUEBA
+- Usuario: admin
+- Contraseña: admin123
+
+CUENTA DE USUARIO DE PRUEBA
+- Usuario: demo
+- Contraseña: demo123
+
+FUNCIONES
+- Registro obligatorio e inicio/cierre de sesión.
+- Una o varias mascotas por usuario.
+- Foto y ficha completa de cada mascota.
+- Libreta sanitaria individual para cada mascota.
+- Carga de vacunas, fecha de aplicación y próxima fecha.
+- Carga de controles veterinarios, con fecha, tipo, veterinario y observaciones.
+- Carga de desparasitaciones, producto, fecha y próxima fecha.
+- Registro de operaciones/cirugías, fecha, veterinario y observaciones.
+- Veterinaria/veterinario de cabecera y teléfono para cada mascota.
+- Historial de salud visible y ordenado por fecha.
+- Posibilidad de eliminar registros de la libreta.
+- Familiares de emergencia (hasta 2).
+- Veterinario de confianza del usuario.
+- Auxilio con llamada a 911 y contactos de emergencia.
+- Auxilio con botones para llamar y enviar por WhatsApp toda la información de las mascotas.
+- El mensaje de WhatsApp incluye datos, vacunas, controles, desparasitaciones, operaciones y veterinaria de cabecera.
+- Comunidad: publicaciones, fotos y comentarios.
+- Encuentros Pata a Pata.
+- Enlace a Instagram.
+- Carrusel de imágenes administrable.
+- Las fotos del carrusel se muestran completas y centradas, con un fondo temático de mascotas en los espacios laterales.
+- Menú único desplegable.
+- Panel de administración.
+- Suspender/reactivar usuarios.
+- Eliminar usuarios y sus datos.
+- Moderar/eliminar comentarios.
+- Subir/eliminar imágenes del carrusel.
+- Base SQLite local.
+- Datos demo para poder probar inmediatamente.
+
+FECHA, HORA Y CLIMA
+- En la parte superior se muestra automáticamente el día y la fecha actuales.
+- También se muestra la hora actual del equipo en formato de 24 horas.
+- El clima se consulta automáticamente mediante Open-Meteo.
+- Si el navegador autoriza la ubicación, se consulta el clima de esa ubicación.
+- Si no se autoriza o no está disponible, se utiliza Buenos Aires como ubicación de referencia.
+- Si no hay conexión a Internet, el resto de la aplicación continúa funcionando y el clima figura como no disponible.
+
+LIBRETA SANITARIA
+Desde "Mis mascotas" abrí una mascota y elegí "Cargar / editar libreta".
+También podés entrar desde "Libreta sanitaria" en el menú.
+
+La libreta permite guardar por separado:
+- Veterinaria/veterinario de cabecera y teléfono.
+- Vacunas: vacuna, fecha, próxima fecha, veterinario y observaciones.
+- Controles: fecha, tipo de control, veterinario y observaciones.
+- Desparasitaciones: fecha, producto, próxima fecha, veterinario y observaciones.
+- Operaciones/cirugías: fecha, operación, veterinario y observaciones.
+
+La aplicación mantiene el historial, por lo que se pueden cargar varias vacunas,
+controles, desparasitaciones y operaciones para una misma mascota.
+
+MIGRACION DE LA BASE EXISTENTE
+Esta versión agrega automáticamente las tablas y campos necesarios al iniciar.
+Si ya tenés una pata_a_pata.db funcionando, podés usarla directamente: la aplicación
+creará los nuevos campos de veterinaria de cabecera y las nuevas tablas de salud sin
+borrar las mascotas ni los datos existentes.
+
+CARRUSEL
+Las imágenes cargadas por el administrador quedan en static/uploads.
+El panel permite agregar título, texto, enlace e imagen.
+Las imágenes se ajustan con object-fit: contain para evitar recortes o deformaciones.
+Los espacios laterales tienen un fondo ilustrado relacionado con mascotas.
+
+PIE DE PAGINA
+La aplicación identifica esta versión como:
+PATA A PATA V4.0
+Desarrollado por Vanesa Varela - Damián Ferreyra
+Año 2026
+
+SEGURIDAD DE PRUEBA
+Esta versión es una aplicación local/prototipo. Antes de publicarla en Internet hay que
+cambiar SECRET_KEY, la contraseña de administración y agregar medidas de producción
+(HTTPS, CSRF, límites de subida, almacenamiento externo, etc.).
+
+REINICIAR LA DEMO
+Para volver a una base limpia, cerrá la aplicación y borrá:
+    pata_a_pata.db
+Luego ejecutá nuevamente:
+    py app.py
+
+NOTA
+Los veterinarios, lugares, teléfonos y demás datos incluidos son DEMO y no implican
+recomendaciones, disponibilidad ni información oficial.
+
+
+ACTUALIZACION V4.0 FINAL
+- Carrusel con fondo blanco decorativo: patas naranjas, hojas verdes y flores.
+- Administración > Carrusel ahora permite solamente cargar fotos.
+- Administración permite elegir la Mascota del mes para destacarla en la portada durante el mes actual.
