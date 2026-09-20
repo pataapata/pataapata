@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Pata a Pata V4.0{% endblock %}
+{% block content %}
+{% if slides %}
+<section class="carousel">
+{% for s in slides %}
+<div class="slide {% if loop.first %}active{% endif %}">
+<img src="{{url_for('static',filename='uploads/'+s.imagen)}}" alt="{{s.titulo}}">
+{% if s.titulo or s.texto or s.enlace %}<div class="slide-copy"><span class="tag">🐾 PATA A PATA</span>{% if s.titulo %}<h1>{{s.titulo}}</h1>{% endif %}{% if s.texto %}<p>{{s.texto}}</p>{% endif %}{% if s.enlace %}<a class="primary" href="{{s.enlace}}" target="_blank" rel="noopener">Ver más</a>{% endif %}</div>{% endif %}
+</div>
+{% endfor %}
+{% if slides|length>1 %}<button class="car prev" onclick="moveSlide(-1)">‹</button><button class="car next" onclick="moveSlide(1)">›</button>{% endif %}
+</section>
+{% else %}
+<section class="hero"><img src="{{url_for('static',filename='img/pata_a_pata_inicio.svg')}}" alt=""><div><span class="eyebrow">🐾 COMUNIDAD · CUIDADO · AMISTAD</span><h1>Bienvenidos a<br><span>PATA A PATA</span></h1><p>Todo lo que necesitás para cuidar, disfrutar y compartir la vida con tus mascotas.</p><button class="primary big" onclick="toggleMenu()">☰ ABRIR MENÚ</button></div></section>
+{% endif %}
+{% if mascota_mes %}
+<section class="mascota-mes">
+<div class="mascota-mes-title"><span>👑</span><div><small>MASCOTA DEL MES</small><h2>{{mascota_mes.nombre}}</h2></div></div>
+<div class="mascota-mes-body"><img src="{% if mascota_mes.foto=='mascota.svg' %}{{url_for('static',filename='img/mascota.svg')}}{% else %}{{url_for('static',filename='uploads/'+mascota_mes.foto)}}{% endif %}" alt="{{mascota_mes.nombre}}"><div><p class="pet-meta">{{mascota_mes.especie}}{% if mascota_mes.raza %} · {{mascota_mes.raza}}{% endif %}{% if mascota_mes.sexo %} · {{mascota_mes.sexo}}{% endif %}</p>{% if mascota_mes.observaciones %}<p>{{mascota_mes.observaciones}}</p>{% endif %}<a class="primary" href="{{url_for('mascota',mascota_id=mascota_mes.id)}}">Ver ficha</a></div></div>
+</section>
+{% endif %}
+{% if current_user %}
+<div class="page-head"><h2>🐾 Mis mascotas</h2><a class="link" href="{{url_for('mascotas')}}">Ver todas →</a></div>
+<div class="pet-grid">{% for m in mascotas %}<a class="pet-card" href="{{url_for('mascota',mascota_id=m.id)}}"><img src="{% if m.foto=='mascota.svg' %}{{url_for('static',filename='img/mascota.svg')}}{% else %}{{url_for('static',filename='uploads/'+m.foto)}}{% endif %}"><div><h3>{{m.nombre}}</h3><p>{{m.especie}}{% if m.raza %} · {{m.raza}}{% endif %}</p></div></a>{% endfor %}<a class="pet-card add" href="{{url_for('nueva_mascota')}}"><div class="plus">＋</div><div><h3>Agregar mascota</h3><p>Crear una nueva ficha</p></div></a></div>
+{% else %}
+<section class="welcome-card"><div><span class="eyebrow">TU ESPACIO</span><h2>Creá tu cuenta y empezá a usar Pata a Pata</h2><p>Registrá tus mascotas, contactos de emergencia, veterinario de confianza y participá de la comunidad.</p></div><a class="primary" href="{{url_for('registro')}}">✨ REGISTRARME</a></section>
+{% endif %}
+<section class="feature-grid">
+<a href="{{url_for('comunidad') if current_user else url_for('login')}}" class="feature"><b>📸</b><strong>Comunidad</strong><span>Publicaciones, fotos y comentarios</span></a>
+<a href="{{url_for('encuentros') if current_user else url_for('login')}}" class="feature"><b>🐾</b><strong>Encuentros</strong><span>Compartí actividades con la comunidad</span></a>
+<a href="{{url_for('lugares') if current_user else url_for('login')}}" class="feature"><b>📍</b><strong>Cerca</strong><span>Servicios y lugares</span></a>
+<a href="{{url_for('auxilio') if current_user else url_for('login')}}" class="feature danger"><b>🚨</b><strong>Auxilio</strong><span>Contactos para una emergencia</span></a>
+</section>
+<script>
+let si=0;const slides=document.querySelectorAll('.slide');
+function showSlide(n){if(!slides.length)return;si=(n+slides.length)%slides.length;slides.forEach((x,i)=>x.classList.toggle('active',i===si))}
+function moveSlide(d){showSlide(si+d)}
+if(slides.length>1)setInterval(()=>moveSlide(1),6000);
+</script>
+{% endblock %}

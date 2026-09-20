@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}Mis mascotas{% endblock %}{% block content %}
+<div class="page-head"><h1>🐾 Mis mascotas</h1><a class="primary" href="{{url_for('nueva_mascota')}}">＋ Agregar</a></div>
+<div class="cards">{% for m in mascotas %}<a class="card pet-row" href="{{url_for('mascota',mascota_id=m.id)}}"><img src="{% if m.foto=='mascota.svg' %}{{url_for('static',filename='img/mascota.svg')}}{% else %}{{url_for('static',filename='uploads/'+m.foto)}}{% endif %}"><div><h2>{{m.nombre}}</h2><p>{{m.especie}}{% if m.raza %} · {{m.raza}}{% endif %}</p><p>{{m.color or 'Sin color indicado'}} · {{m.peso or '—'}} kg</p></div><span>→</span></a>{% else %}<div class="empty">Todavía no agregaste mascotas.</div>{% endfor %}</div>
+{% endblock %}

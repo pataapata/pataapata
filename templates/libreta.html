@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Libreta sanitaria · {{ mascota.nombre }}{% endblock %}
+{% block content %}
+<a class="back" href="{{url_for('mascota', mascota_id=mascota.id)}}">← Volver a {{ mascota.nombre }}</a>
+<div class="page-head"><div><span class="tag">LIBRETA SANITARIA</span><h1>📋 {{ mascota.nombre }}</h1><p class="muted">Cargá y mantené actualizado todo su historial de salud.</p></div></div>
+
+<form class="form-card health-form" method="post">
+  <div class="health-section">
+    <h2>🩺 Veterinaria de cabecera</h2>
+    <div class="two">
+      <div><label>Veterinario/a o veterinaria</label><input name="veterinario_cabecera" value="{{ mascota.veterinario_cabecera or '' }}" placeholder="Ej.: Dra. Paula González"></div>
+      <div><label>Teléfono</label><input name="veterinario_cabecera_telefono" value="{{ mascota.veterinario_cabecera_telefono or '' }}" placeholder="Ej.: 11 4444-1122"></div>
+    </div>
+  </div>
+
+  <div class="health-section">
+    <h2>💉 Nueva vacuna</h2>
+    <div class="two">
+      <div><label>Vacuna</label><input name="vacuna" placeholder="Ej.: Antirrábica"></div>
+      <div><label>Fecha de aplicación</label><input type="date" name="vacuna_fecha"></div>
+      <div><label>Próxima fecha</label><input type="date" name="vacuna_proxima"></div>
+      <div><label>Veterinario/a</label><input name="vacuna_veterinario"></div>
+    </div>
+    <label>Observaciones</label><textarea name="vacuna_observaciones" rows="2" placeholder="Lote, reacción, indicaciones, etc."></textarea>
+  </div>
+
+  <div class="health-section">
+    <h2>🩺 Nuevo control</h2>
+    <div class="two">
+      <div><label>Fecha</label><input type="date" name="control_fecha"></div>
+      <div><label>Tipo de control</label><input name="control_tipo" placeholder="Ej.: Control general / cardiológico"></div>
+      <div><label>Veterinario/a</label><input name="control_veterinario"></div>
+    </div>
+    <label>Observaciones</label><textarea name="control_observaciones" rows="2" placeholder="Peso, estudios, indicaciones, resultados, etc."></textarea>
+  </div>
+
+  <div class="health-section">
+    <h2>🪱 Desparasitación</h2>
+    <div class="two">
+      <div><label>Fecha</label><input type="date" name="desparasitacion_fecha"></div>
+      <div><label>Producto / medicamento</label><input name="desparasitacion_producto" placeholder="Ej.: Antiparasitario"></div>
+      <div><label>Próxima fecha</label><input type="date" name="desparasitacion_proxima"></div>
+      <div><label>Veterinario/a</label><input name="desparasitacion_veterinario"></div>
+    </div>
+    <label>Observaciones</label><textarea name="desparasitacion_observaciones" rows="2"></textarea>
+  </div>
+
+  <div class="health-section">
+    <h2>🏥 Operación / cirugía</h2>
+    <div class="two">
+      <div><label>Fecha</label><input type="date" name="operacion_fecha"></div>
+      <div><label>Operación</label><input name="operacion" placeholder="Ej.: Castración"></div>
+      <div><label>Veterinario/a</label><input name="operacion_veterinario"></div>
+    </div>
+    <label>Observaciones</label><textarea name="operacion_observaciones" rows="2" placeholder="Clínica, recuperación, medicación, etc."></textarea>
+  </div>
+
+  <button class="primary" type="submit">💾 GUARDAR EN LA LIBRETA</button>
+</form>
+
+<div class="health-history">
+  <div class="page-head"><h2>Historial de {{ mascota.nombre }}</h2></div>
+  {% if vacunas %}<section class="section-card"><h2>💉 Vacunas</h2>{% for v in vacunas %}<div class="history-row"><div><b>{{v.vacuna}}</b><small>{{v.fecha}}{% if v.veterinario %} · {{v.veterinario}}{% endif %}</small>{% if v.observaciones %}<p>{{v.observaciones}}</p>{% endif %}</div><div class="history-actions"><span>{% if v.proxima_fecha %}Próxima: <b>{{v.proxima_fecha}}</b>{% endif %}</span><form method="post" action="{{url_for('eliminar_registro_libreta',mascota_id=mascota.id,tipo='vacuna',registro_id=v.id)}}"><button class="danger-btn" type="submit">Eliminar</button></form></div></div>{% endfor %}</section>{% endif %}
+  {% if controles %}<section class="section-card"><h2>🩺 Controles</h2>{% for c in controles %}<div class="history-row"><div><b>{{c.tipo}}</b><small>{{c.fecha}}{% if c.veterinario %} · {{c.veterinario}}{% endif %}</small>{% if c.observaciones %}<p>{{c.observaciones}}</p>{% endif %}</div><form method="post" action="{{url_for('eliminar_registro_libreta',mascota_id=mascota.id,tipo='control',registro_id=c.id)}}"><button class="danger-btn" type="submit">Eliminar</button></form></div>{% endfor %}</section>{% endif %}
+  {% if desparasitaciones %}<section class="section-card"><h2>🪱 Desparasitaciones</h2>{% for d in desparasitaciones %}<div class="history-row"><div><b>{{d.producto or 'Desparasitación'}}</b><small>{{d.fecha}}{% if d.veterinario %} · {{d.veterinario}}{% endif %}</small>{% if d.observaciones %}<p>{{d.observaciones}}</p>{% endif %}</div><div class="history-actions"><span>{% if d.proxima_fecha %}Próxima: <b>{{d.proxima_fecha}}</b>{% endif %}</span><form method="post" action="{{url_for('eliminar_registro_libreta',mascota_id=mascota.id,tipo='desparasitacion',registro_id=d.id)}}"><button class="danger-btn" type="submit">Eliminar</button></form></div></div>{% endfor %}</section>{% endif %}
+  {% if operaciones %}<section class="section-card"><h2>🏥 Operaciones</h2>{% for o in operaciones %}<div class="history-row"><div><b>{{o.operacion}}</b><small>{{o.fecha}}{% if o.veterinario %} · {{o.veterinario}}{% endif %}</small>{% if o.observaciones %}<p>{{o.observaciones}}</p>{% endif %}</div><form method="post" action="{{url_for('eliminar_registro_libreta',mascota_id=mascota.id,tipo='operacion',registro_id=o.id)}}"><button class="danger-btn" type="submit">Eliminar</button></form></div>{% endfor %}</section>{% endif %}
+  {% if not vacunas and not controles and not desparasitaciones and not operaciones %}<div class="empty">Todavía no hay registros. Usá el formulario de arriba para cargar la libreta.</div>{% endif %}
+</div>
+{% endblock %}

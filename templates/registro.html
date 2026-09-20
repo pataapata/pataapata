@@ -1,0 +1,3 @@
+{% extends "base.html" %}{% block title %}Registro{% endblock %}{% block content %}
+<div class="form-card"><span class="eyebrow">🐾 NUEVA CUENTA</span><h1>Registrate</h1><p class="muted">El registro es obligatorio para usar las funciones personales y de comunidad.</p><form method="post"><label>Nombre *</label><input name="nombre" required><label>Nombre de usuario *</label><input name="usuario" required><label>Contraseña *</label><input type="password" name="password" minlength="6" required><div class="two"><div><label>Teléfono</label><input name="telefono"></div><div><label>Zona</label><input name="zona"></div></div><button class="primary" type="submit">CREAR CUENTA</button></form></div>
+{% endblock %}

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Pata a Pata{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
+</head>
+<body>
+<header class="topbar">
+<a class="brand" href="{{ url_for('inicio') }}">🐾 PATA A PATA</a>
+<div class="live-info" aria-live="polite">
+  <div class="live-date"><span class="live-icon">📅</span><div><small>Hoy es</small><strong id="currentDate">Cargando fecha…</strong><b id="currentTime">--:--</b></div></div>
+  <div class="live-weather"><span id="weatherIcon" class="weather-icon">☀️</span><div><small>Clima actual</small><strong id="weatherTemp">--°C</strong><span id="weatherText">Consultando…</span></div></div>
+</div>
+<button class="menu-btn" onclick="toggleMenu()">☰ <span>MENÚ</span></button>
+</header>
+<nav id="sideMenu" class="side-menu">
+<div class="menu-head"><strong>🐾 PATA A PATA</strong><button onclick="toggleMenu()">×</button></div>
+<a href="{{url_for('inicio')}}">🏠 Inicio</a>
+{% if current_user %}
+<a href="{{url_for('mascotas')}}">🐶 Mis mascotas</a>
+<a href="{{url_for('mi_perfil')}}">👤 Mi perfil</a>
+<a href="{{url_for('salud')}}">💉 Libreta sanitaria</a>
+<a href="{{url_for('auxilio')}}">🚨 Auxilio</a>
+<a href="{{url_for('comunidad')}}">📸 Comunidad</a>
+<a href="{{url_for('encuentros')}}">🐾 Encuentros Pata a Pata</a>
+<a href="{{url_for('veterinarios')}}">🩺 Veterinarios</a>
+<a href="{{url_for('lugares')}}">📍 Centros y lugares</a>
+<a href="{{url_for('profesionales',tipo='Cuidador/a')}}">🏠 Cuidadores</a>
+<a href="{{url_for('profesionales',tipo='Paseador/a')}}">🦮 Paseadores</a>
+<a href="{{instagram_url}}" target="_blank" rel="noopener">📱 Instagram</a>
+{% if is_admin %}<a class="admin-link" href="{{url_for('admin')}}">🔐 Administración</a>{% endif %}
+<a class="logout-link" href="{{url_for('logout')}}">↪ Cerrar sesión</a>
+{% else %}
+<a href="{{url_for('login')}}">🔐 Iniciar sesión</a>
+<a class="primary-menu-link" href="{{url_for('registro')}}">✨ Registrarme</a>
+{% endif %}
+</nav>
+<div id="shade" class="shade" onclick="toggleMenu()"></div>
+<main class="container">
+{% with messages=get_flashed_messages(with_categories=true) %}
+{% for category,message in messages %}<div class="flash {{category}}">✓ {{message}}</div>{% endfor %}
+{% endwith %}
+{% block content %}{% endblock %}
+</main>
+<footer>🐾 <strong>PATA A PATA V4.0</strong> · Desarrollado por Vanesa Varela - Damián Ferreyra · Año 2026 🐾</footer>
+<script>
+function toggleMenu(){document.getElementById('sideMenu').classList.toggle('open');document.getElementById('shade').classList.toggle('show')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('sideMenu').classList.remove('open');document.getElementById('shade').classList.remove('show')}})
+
+function updateClock(){
+  const now=new Date();
+  const date=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(now);
+  const cap=date.charAt(0).toUpperCase()+date.slice(1);
+  const time=new Intl.DateTimeFormat('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(now);
+  const d=document.getElementById('currentDate'), t=document.getElementById('currentTime');
+  if(d)d.textContent=cap;
+  if(t)t.textContent=time;
+}
+const weatherLabels={0:['☀️','Despejado'],1:['🌤️','Mayormente despejado'],2:['⛅','Parcialmente nublado'],3:['☁️','Nublado'],45:['🌫️','Niebla'],48:['🌫️','Niebla'],51:['🌦️','Llovizna'],53:['🌦️','Llovizna'],55:['🌧️','Llovizna intensa'],61:['🌦️','Lluvia'],63:['🌧️','Lluvia moderada'],65:['🌧️','Lluvia intensa'],71:['🌨️','Nieve'],73:['🌨️','Nieve moderada'],75:['❄️','Nieve intensa'],80:['🌦️','Chaparrones'],81:['🌧️','Chaparrones moderados'],82:['⛈️','Chaparrones fuertes'],95:['⛈️','Tormenta'],96:['⛈️','Tormenta con granizo'],99:['⛈️','Tormenta con granizo']};
+async function loadWeather(lat=-34.6037,lon=-58.3816){
+  try{
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`);
+    if(!r.ok)throw new Error('weather');
+    const data=await r.json(); const code=data.current.weather_code; const info=weatherLabels[code]||['🌤️','Clima actual'];
+    const i=document.getElementById('weatherIcon'), temp=document.getElementById('weatherTemp'), txt=document.getElementById('weatherText');
+    if(i)i.textContent=info[0]; if(temp)temp.textContent=Math.round(data.current.temperature_2m)+'°C'; if(txt)txt.textContent=info[1];
+  }catch(e){
+    const txt=document.getElementById('weatherText'); if(txt)txt.textContent='Clima no disponible';
+  }
+}
+function startWeather(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>loadWeather(pos.coords.latitude,pos.coords.longitude),()=>loadWeather(),{enableHighAccuracy:false,timeout:4000,maximumAge:600000});
+  }else loadWeather();
+}
+updateClock(); setInterval(updateClock,1000); startWeather(); setInterval(startWeather,600000);
+</script>
+</body></html>

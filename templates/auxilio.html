@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block title %}Auxilio{% endblock %}{% block content %}
+<section class="emergency-hero"><div class="sirena">🚨</div><div><h1>Auxilio</h1><p>Accesos rápidos para una emergencia. Podés llamar o enviar por WhatsApp toda la información de tus mascotas.</p></div></section>
+<div class="emergency-grid">
+  <a class="emergency-card" href="tel:911">📞<b>911</b><span>Llamar a emergencias</span></a>
+  {% for c in contactos %}
+  <div class="emergency-card emergency-contact-card">
+    <div class="contact-icon">{% if c.tipo == 'Veterinario/a de cabecera' %}🩺{% else %}👨‍👩‍👧{% endif %}</div>
+    <b>{{c.nombre}}</b><span>{{c.telefono}}</span><small>{{c.tipo}}</small>
+    <div class="emergency-actions">
+      <a class="call-btn" href="{{c.tel_url}}">📞 Llamar</a>
+      <a class="whatsapp-btn" href="{{c.whatsapp_url}}" target="_blank" rel="noopener">💬 Enviar info por WhatsApp</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% if contactos and hay_mascotas %}<div class="notice success-note">💬 El botón de WhatsApp prepara automáticamente un mensaje con la información de tus mascotas: datos, vacunas, controles, desparasitaciones, operaciones y veterinaria de cabecera.</div>{% endif %}
+{% if not contactos %}<div class="notice">Todavía no cargaste contactos personales. Podés hacerlo desde <a class="link" href="{{url_for('mi_perfil')}}">Mi perfil</a>.</div>{% elif not hay_mascotas %}<div class="notice">Todavía no tenés mascotas cargadas. Agregá una mascota para que el mensaje de WhatsApp pueda incluir su información sanitaria.</div>{% endif %}
+<h2 class="section-title">Veterinarios demo</h2><div class="cards">{% for v in veterinarios %}<div class="card"><h3>{{v.nombre}}</h3><p>{{v.especialidad}} · {{v.zona}}</p><a class="outline" href="tel:{{v.telefono}}">📞 {{v.telefono}}</a></div>{% endfor %}</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block title %}Mi perfil{% endblock %}{% block content %}
+<div class="page-head"><h1>Mi perfil</h1></div>
+<form class="form-card" method="post"><h2>Datos personales</h2><div class="two"><div><label>Nombre</label><input name="nombre" value="{{usuario.nombre}}" required></div><div><label>Teléfono</label><input name="telefono" value="{{usuario.telefono or ''}}"></div></div><label>Zona</label><input name="zona" value="{{usuario.zona or ''}}">
+<h2>🚨 Familiares de emergencia</h2><div class="two"><div><label>Familiar 1</label><input name="familiar1_nombre" value="{{usuario.familiar1_nombre or ''}}"><label>Teléfono</label><input name="familiar1_telefono" value="{{usuario.familiar1_telefono or ''}}"></div><div><label>Familiar 2</label><input name="familiar2_nombre" value="{{usuario.familiar2_nombre or ''}}"><label>Teléfono</label><input name="familiar2_telefono" value="{{usuario.familiar2_telefono or ''}}"></div></div>
+<h2>🩺 Veterinario de confianza</h2><div class="two"><div><label>Nombre</label><input name="veterinario_confianza" value="{{usuario.veterinario_confianza or ''}}"></div><div><label>Teléfono</label><input name="veterinario_telefono" value="{{usuario.veterinario_telefono or ''}}"></div></div><button class="primary" type="submit">GUARDAR CAMBIOS</button></form>
+{% endblock %}

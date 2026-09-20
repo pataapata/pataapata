@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Libreta sanitaria{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>💉 Libreta sanitaria</h1><p class="muted">Una libreta independiente para cada mascota.</p></div></div>
+<div class="health-pets">
+{% for item in mascotas_salud %}
+  {% set m=item.mascota %}
+  <section class="health-pet-card">
+    <div class="health-pet-head">
+      <div><span class="tag">{{m.especie}}</span><h2>{{m.nombre}}</h2><p class="muted">{{m.raza or 'Sin raza indicada'}}</p></div>
+      <a class="primary" href="{{url_for('libreta_mascota',mascota_id=m.id)}}">📋 Cargar / editar libreta</a>
+    </div>
+    <div class="health-summary">
+      <div><span>Último control</span><b>{{item.controles[0].fecha if item.controles else 'Sin cargar'}}</b><small>{{item.controles[0].tipo if item.controles else '—'}}</small></div>
+      <div><span>Última vacuna</span><b>{{item.vacunas[0].fecha if item.vacunas else 'Sin cargar'}}</b><small>{{item.vacunas[0].vacuna if item.vacunas else '—'}}</small></div>
+      <div><span>Última desparasitación</span><b>{{item.desparasitaciones[0].fecha if item.desparasitaciones else 'Sin cargar'}}</b><small>{{item.desparasitaciones[0].producto if item.desparasitaciones and item.desparasitaciones[0].producto else '—'}}</small></div>
+      <div><span>Operaciones</span><b>{{item.operaciones|length}}</b><small>{% if item.operaciones %}{{item.operaciones[0].operacion}}{% else %}Ninguna cargada{% endif %}</small></div>
+    </div>
+    <div class="health-vet"><span>🩺 Veterinaria de cabecera</span><b>{{m.veterinario_cabecera or 'Sin cargar'}}</b>{% if m.veterinario_cabecera_telefono %}<small>{{m.veterinario_cabecera_telefono}}</small>{% endif %}</div>
+  </section>
+{% else %}
+  <div class="empty">Primero agregá una mascota para poder cargar su libreta sanitaria.</div>
+{% endfor %}
+</div>
+{% endblock %}
