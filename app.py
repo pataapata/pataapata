@@ -393,6 +393,83 @@ def nueva_mascota():
         return redirect(url_for("mascotas"))
     return render_template("nueva_mascota.html")
 
+@app.route("/mascota/<int:mascota_id>/editar", methods=["GET", "POST"])
+@login_required
+def editar_mascota(mascota_id):
+    conn = get_db()
+    m = conn.execute("SELECT * FROM mascotas WHERE id=? AND usuario_id=?",
+                     (mascota_id, session["user_id"])).fetchone()
+    if not m:
+        conn.close()
+        abort(404)
+
+    if request.method == "POST":
+        nueva_foto = m["foto"]
+        archivo = request.files.get("foto")
+        if archivo and archivo.filename:
+            try:
+                nueva_foto = save_image(archivo)
+            except ValueError as e:
+                conn.close()
+                flash(str(e), "warning")
+                return render_template("editar_mascota.html", mascota=m)
+
+        conn.execute("""UPDATE mascotas SET nombre=?, especie=?, raza=?, sexo=?,
+                        nacimiento=?, color=?, peso=?, castrado=?, observaciones=?, foto=?
+                        WHERE id=? AND usuario_id=?""",
+            (request.form.get("nombre", "").strip(),
+             request.form.get("especie", "").strip(),
+             request.form.get("raza", "").strip(),
+             request.form.get("sexo", "").strip(),
+             request.form.get("nacimiento", "").strip(),
+             request.form.get("color", "").strip(),
+             request.form.get("peso") or None,
+             request.form.get("castrado", "").strip(),
+             request.form.get("observaciones", "").strip(),
+             nueva_foto, mascota_id, session["user_id"]))
+        conn.commit()
+        conn.close()
+
+        if archivo and archivo.filename and m["foto"] not in (None, "", "mascota.svg") and m["foto"] != nueva_foto:
+            old_path = os.path.join(UPLOAD_DIR, m["foto"])
+            if os.path.isfile(old_path):
+                try:
+                    os.remove(old_path)
+                except OSError:
+                    pass
+
+        flash("Datos de la mascota actualizados correctamente.", "success")
+        return redirect(url_for("mascota", mascota_id=mascota_id))
+
+    conn.close()
+    return render_template("editar_mascota.html", mascota=m)
+
+@app.post("/mascota/<int:mascota_id>/eliminar")
+@login_required
+def eliminar_mascota(mascota_id):
+    conn = get_db()
+    m = conn.execute("SELECT * FROM mascotas WHERE id=? AND usuario_id=?",
+                     (mascota_id, session["user_id"])).fetchone()
+    if not m:
+        conn.close()
+        abort(404)
+
+    conn.execute("DELETE FROM mascotas WHERE id=? AND usuario_id=?",
+                 (mascota_id, session["user_id"]))
+    conn.commit()
+    conn.close()
+
+    if m["foto"] not in (None, "", "mascota.svg"):
+        foto_path = os.path.join(UPLOAD_DIR, m["foto"])
+        if os.path.isfile(foto_path):
+            try:
+                os.remove(foto_path)
+            except OSError:
+                pass
+
+    flash("Mascota eliminada correctamente.", "success")
+    return redirect(url_for("mascotas"))
+
 @app.route("/mascota/<int:mascota_id>")
 @login_required
 def mascota(mascota_id):
@@ -769,9 +846,10 @@ def delete_slide(slide_id):
     flash("Imagen eliminada del carrusel.","success")
     return redirect(url_for("admin"))
 
+# Inicializa la base de datos también cuando la aplicación es cargada por Gunicorn/Render.
 init_db()
 
 if __name__ == "__main__":
-    print("\n🐾 PATA A PATA V2")
-    print("Abrí en tu navegador: http://127.0.0.1:5000\n")
+    print("\\n🐾 PATA A PATA V2")
+    print("Abrí en tu navegador: http://127.0.0.1:5000\\n")
     app.run(debug=True)
